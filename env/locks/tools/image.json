@@ -1,0 +1,41 @@
+{
+  "id": "e14d72664ba53fc4fb77a7296051bcd6447c0d90104cb7ee93a339c35a382e5d",
+  "name": "localhost/pcb-thermal-tools:0.1",
+  "pins": {
+    "amgx_commit": "91a8413ef267b1c32aff4014c02820e1c5897ac2",
+    "assets": {
+      "FreeCAD.AppImage": {
+        "sha256": "f6dc6ba676e5ac96a565ebc8d657232f94c6158e85b4352141bd1a46f6b43434",
+        "url": "https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage",
+        "version": "1.1.4"
+      },
+      "ParaView-5.13.3.tar.gz": {
+        "sha256": "2fd7cb3e1155576e3ed56a4a238bdf1b523b7e85611b90f4437c66fb2908ddc8",
+        "url": "https://www.paraview.org/files/v5.13/ParaView-5.13.3-MPI-Linux-Python3.10-x86_64.tar.gz"
+      },
+      "amgx.tar.gz": {
+        "sha256": "81d64b6fa744704e6dee1a7e71ef06fd422d4abcf9867c0451108f40f20707c4",
+        "url": "https://codeload.github.com/NVIDIA/AMGX/tar.gz/91a8413ef267b1c32aff4014c02820e1c5897ac2"
+      },
+      "cacert.pem": {
+        "sha256": "796f1389bfea13c0ed78f663b765baaff54a508e5483786bd6ece73c5e3e3cbe",
+        "url": "https://curl.se/ca/cacert-2026-10-20.pem"
+      },
+      "elmer-26.1.tar.gz": {
+        "sha256": "454bfa6aa1be42ade194a633d4269381e9ab94e959869818dea268c55970fd09",
+        "url": "https://codeload.github.com/ElmerCSC/elmerfem/tar.gz/5a8de867068be0568f09af40fb90fee300dfbede"
+      }
+    },
+    "base_image": "docker.io/library/ubuntu@sha256:24737cef17f4e22b1977df7d9a05e77c4e28b7da5b8911f8d8ccda136bf3573c",
+    "cuda_arch": "75",
+    "cuda_image": "docker.io/nvidia/cuda@sha256:020bc241a628776338f4d4053fed4c38f6f7f3d7eb5919fecb8de313bb8ba47c",
+    "cuda_version": "12.9.1",
+    "elmer_commit": "5a8de867068be0568f09af40fb90fee300dfbede",
+    "elmer_version": "26.1",
+    "gmsh_version": "4.12.1",
+    "kicad_version": "10.0.7",
+    "paraview_version": "5.13.3",
+    "schema": 1,
+    "ubuntu_snapshot": "20261027T000000Z"
+  }
+}

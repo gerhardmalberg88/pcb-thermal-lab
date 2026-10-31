@@ -1,0 +1,11 @@
+.cache/
+results/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+
+# Machine-specific diagnostic build records; portable container locks stay versioned.
+env/locks/native-cpu/

@@ -1,0 +1,33 @@
+ARG CUDA_IMAGE
+ARG CPU_IMAGE
+FROM ${CUDA_IMAGE} AS toolkit
+FROM ${CPU_IMAGE}
+ARG BUILD_JOBS=2
+ARG CUDA_ARCH=75
+COPY --from=toolkit /usr/local/cuda-12.9 /usr/local/cuda-12.9
+RUN ln -s cuda-12.9 /usr/local/cuda
+ENV PATH=/usr/local/cuda/bin:/opt/elmer/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+COPY amgx.tar.gz /tmp/amgx.tar.gz
+RUN mkdir -p /opt/amgx-source && tar xzf /tmp/amgx.tar.gz -C /opt/amgx-source --strip-components=1 && \
+    cmake -S /opt/amgx-source -B /opt/amgx-build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCH} -DCMAKE_INSTALL_PREFIX=/opt/amgx && \
+    cmake --build /opt/amgx-build --parallel ${BUILD_JOBS} && cmake --install /opt/amgx-build && \
+    cp /opt/amgx-build/CMakeCache.txt /opt/provenance/amgx-CMakeCache.txt && \
+    rm -rf /opt/amgx-build /tmp/amgx.tar.gz
+COPY patch-elmer-cuda.py /opt/provenance/patch-elmer-cuda.py
+RUN python3 /opt/provenance/patch-elmer-cuda.py /opt/elmer-source && \
+    cmake -S /opt/elmer-source -B /opt/elmer-gpu-build -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/elmer \
+      -DWITH_MPI=ON -DWITH_OpenMP=ON -DWITH_Hypre=ON -DHypre_INCLUDE_DIR=/usr/include/hypre \
+      -DHypre_LIBRARY=/usr/lib/x86_64-linux-gnu/libHYPRE.so -DWITH_AMGX=ON \
+      -DAMGX_INCLUDE_DIR=/opt/amgx/include -DAMGX_LIBRARY=/opt/amgx/lib/libamgxsh.so \
+      -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda -DWITH_ELMERGUI=OFF -DWITH_ELMERPOST=OFF \
+      '-DINCLUDE_ELMER_MODULES=HeatSolve;HeatSolveVec;FluxSolver;SaveData;ResultOutputSolve' \
+      -DBUILD_TESTING=OFF -DHAVE_QP=OFF && \
+    cmake --build /opt/elmer-gpu-build --parallel ${BUILD_JOBS} && cmake --install /opt/elmer-gpu-build && \
+    cp /opt/elmer-gpu-build/CMakeCache.txt /opt/provenance/elmer-cuda-CMakeCache.txt && rm -rf /opt/elmer-gpu-build
+COPY cuda-check.cu /tmp/cuda-check.cu
+RUN nvcc -arch=sm_${CUDA_ARCH} /tmp/cuda-check.cu -o /usr/local/bin/pcb-thermal-cuda-check && rm /tmp/cuda-check.cu
+ENV LD_LIBRARY_PATH=/opt/amgx/lib:/opt/elmer/lib/elmersolver:/usr/local/cuda/lib64
+ENTRYPOINT []
+CMD ["ElmerSolver", "-v"]

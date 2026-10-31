@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "name": "Layered PCB and plated via verification",
+  "project_root": ".",
+  "board": "board.kicad_pcb",
+  "output": "../../results/examples/layered-via",
+  "analysis": "steady",
+  "sources": {
+    "kind": "watts",
+    "refs": [
+      "R1"
+    ],
+    "watts": {
+      "R1": 0.1
+    }
+  },
+  "geometry": {
+    "mode": "explicit",
+    "detail_margin_mm": 10.0,
+    "tile_mm": 5.0,
+    "plating_mm": 0.025,
+    "solder_mm": 0.1,
+    "resistor_body_mm": [
+      3.2,
+      6.3,
+      0.7
+    ],
+    "terminal_width_mm": 0.8
+  },
+  "mesh": {
+    "fine_mm": 0.6,
+    "coarse_mm": 2,
+    "scale": 1.0,
+    "chord_mm": 0.01
+  },
+  "cooling": {
+    "ambient_c": 25.0,
+    "h_w_m2k": 10.0,
+    "radiation": false
+  },
+  "transient": {
+    "on_s": 1800.0,
+    "off_s": 1800.0,
+    "step_s": 1.0,
+    "field_interval_s": 5.0
+  },
+  "materials": {
+    "copper": {
+      "k": [
+        400,
+        400,
+        400
+      ],
+      "density": 8960,
+      "heat_capacity": 385
+    },
+    "fr4": {
+      "k": [
+        0.8,
+        0.8,
+        0.3
+      ],
+      "density": 1850,
+      "heat_capacity": 1100
+    },
+    "soldermask": {
+      "k": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "density": 1200,
+      "heat_capacity": 1000
+    },
+    "resistor": {
+      "k": [
+        25,
+        25,
+        25
+      ],
+      "density": 3900,
+      "heat_capacity": 880
+    },
+    "terminal": {
+      "k": [
+        67,
+        67,
+        67
+      ],
+      "density": 7310,
+      "heat_capacity": 230
+    },
+    "solder": {
+      "k": [
+        50,
+        50,
+        50
+      ],
+      "density": 7400,
+      "heat_capacity": 230
+    }
+  },
+  "execution": {
+    "backend": "auto",
+    "mpi_ranks": 1,
+    "threads_per_rank": 1,
+    "gpu_count": 1
+  },
+  "numerics": {
+    "linear_tolerance": 1e-10,
+    "max_iterations": 5000
+  },
+  "assumptions": [
+    "Synthetic validation board; 0.1 W resistor input; not a BMS study."
+  ]
+}
