@@ -18,17 +18,17 @@ class BoundedStudy(unittest.TestCase):
     def test_direct_run_records_resolvable_source_paths(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            case = json.loads((ROOT/'examples/layered-via/case.yaml').read_text())
+            case = json.loads((ROOT/'examples/layered-via/case.json').read_text())
             case.update(project_root='.', board='board.kicad_pcb', output='output')
             (root/'board.kicad_pcb').write_text('(kicad_pcb)')
-            write_json(root/'case.yaml', case)
+            write_json(root/'case.json', case)
             runtime = Mock()
             runtime.engine = 'podman'; runtime.image_id.return_value = 'test-image'
             def extract(*args, **kwargs):
                 (Path(kwargs['output'])/'extract/artifact.txt').write_text('fixture extraction')
             runtime.run.side_effect = extract
             with patch('pcb_thermal.pipeline.CACHE', root/'cache'), patch('pcb_thermal.common.CACHE', root/'cache'):
-                out = run(root/'case.yaml', stage='extract', runtime=runtime)
+                out = run(root/'case.json', stage='extract', runtime=runtime)
             saved = json.loads((out/'case.resolved.json').read_text())
             self.assertEqual(saved['project_root'], str(root))
             self.assertEqual(saved['board'], str(root/'board.kicad_pcb'))
@@ -38,7 +38,7 @@ class BoundedStudy(unittest.TestCase):
     def test_first_case_allowance_cannot_be_extended(self):
         for value in (0, -1, 21, float('nan')):
             with self.assertRaisesRegex(WorkflowError, 'first-case allowance'):
-                study('unused.yaml', first_case_minutes=value)
+                study('unused.json', first_case_minutes=value)
 
     def fixture(self, root):
         root = Path(root)

@@ -18,7 +18,7 @@ def sweep(path,parameter,values,backend='cpu'):
         for key in keys[:-1]:target=target[key]
         target[keys[-1]]=value
         c.update(project_root=str(project),board=str(board),output=str(study/str(value)),name=f'{case.get("name","case")}: {parameter}={value}')
-        config=study/(str(value)+'.yaml');write_json(config,c)
+        config=study/(str(value)+'.json');write_json(config,c)
         result=run(config,backend=backend)
         completed.append(result)
         rows.append({'value':value,**json.loads((result/'postprocess/summary.json').read_text())})

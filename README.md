@@ -26,14 +26,14 @@ python3 -m venv --system-site-packages .venv
 python -m pip install --no-build-isolation -e .
 ./pcb-thermal build --profile cpu --jobs 2
 ./pcb-thermal doctor --backend cpu --full
-pcb-thermal run "$PWD/examples/layered-via/case.yaml" --backend cpu
+pcb-thermal run "$PWD/examples/layered-via/case.json" --backend cpu
 ```
 
 Bootstrap uses sudo for host prerequisites and does not replace the graphics
 driver. The editable installation exposes `pcb-thermal` from any working directory; keep
 the lab checkout in place. No hardware or EM checkout is required for this example.
-The checkout launcher also works without installation. Supplied `.yaml` files use JSON
-syntax, which is also valid YAML. Handwritten YAML requires `python3-yaml`.
+The checkout launcher also works without installation. Case files use JSON,
+read with Python's standard library.
 Sources and build artifacts are pinned in `env/pins.json`; completed builds
 record portable container package inventories and image identities under
 `env/locks/`. Machine-specific native build records are ignored.
@@ -46,7 +46,7 @@ FreeCAD is unpacked from a checksum-verified AppImage; it does not require FUSE.
 ./pcb-thermal bootstrap --cuda
 ./pcb-thermal build --profile cuda --cuda-arch 75 --cuda-version 12.9.1
 ./pcb-thermal doctor --backend cuda --full
-pcb-thermal run "$PWD/examples/layered-via/case.yaml" --backend cuda --mpi-ranks 1
+pcb-thermal run "$PWD/examples/layered-via/case.json" --backend cuda --mpi-ranks 1
 ```
 
 CUDA accelerates Elmer's linear solve through AMGX. Geometry, meshing and FEM
@@ -58,7 +58,7 @@ the run without changing backend.
 
 ```mermaid
 flowchart TD
-  C[Versioned case YAML + pcb-thermal] -.-> K[KiCad CLI + pcbnew]
+  C[Versioned case JSON + pcb-thermal] -.-> K[KiCad CLI + pcbnew]
   C -.-> G[Gmsh geometry + conformal mesh]
   C -.-> E[ElmerSolver: authoritative case.sif]
   K -->|STEP + saved copper, stackup, drills, placements| G
@@ -87,7 +87,7 @@ For a board-specific balancing case, install this CLI once and supply the case's
 path from any directory:
 
 ```bash
-pcb-thermal study /path/to/hardware/sim/thermal/CASE/config.yaml \
+pcb-thermal study /path/to/hardware/sim/thermal/CASE/config.json \
   --section steady --schedules odd even --time-budget-minutes 120
 ```
 
@@ -109,12 +109,12 @@ for status meanings, interruption and deferred study commands.
 ## Stages, GUI and results
 
 ```bash
-./pcb-thermal run CASE.yaml --stage extract --backend cpu
-./pcb-thermal run CASE.yaml --stage mesh --backend cpu
-./pcb-thermal run CASE.yaml --stage convert --backend cpu
-./pcb-thermal run CASE.yaml --stage solve --backend cpu --mpi-ranks 2
-./pcb-thermal run CASE.yaml --stage postprocess --backend cpu
-./pcb-thermal sweep CASE.yaml --parameter cooling.h_w_m2k --values 5 10 20 50
+./pcb-thermal run CASE.json --stage extract --backend cpu
+./pcb-thermal run CASE.json --stage mesh --backend cpu
+./pcb-thermal run CASE.json --stage convert --backend cpu
+./pcb-thermal run CASE.json --stage solve --backend cpu --mpi-ranks 2
+./pcb-thermal run CASE.json --stage postprocess --backend cpu
+./pcb-thermal sweep CASE.json --parameter cooling.h_w_m2k --values 5 10 20 50
 ./pcb-thermal gui gmsh --workdir /absolute/results/mesh -- /work/board.msh
 ./pcb-thermal gui freecad --workdir /absolute/results/extract -- /work/board.step
 ./pcb-thermal gui elmer --workdir /absolute/results/solve/mesh

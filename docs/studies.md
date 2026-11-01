@@ -5,7 +5,7 @@ A hardware checkout can live anywhere. Supply its case path explicitly; paths
 inside the case resolve relative to that case, not the current working directory.
 
 ```bash
-pcb-thermal study /path/to/hardware/sim/thermal/CASE/config.yaml \
+pcb-thermal study /path/to/hardware/sim/thermal/CASE/config.json \
   --section steady --schedules odd even --time-budget-minutes 120 --detail-check
 ```
 
@@ -95,7 +95,7 @@ From the lab checkout:
 ```bash
 PYTHONPATH=src python3 -m unittest discover -s tests
 PYTHONPATH=src python3 tests/verify_deadline.py
-pcb-thermal run "$PWD/examples/layered-via/case.yaml" --backend cpu
+pcb-thermal run "$PWD/examples/layered-via/case.json" --backend cpu
 PYTHONPATH=src python3 tests/verify_interfaces.py
 PYTHONPATH=src python3 tests/verify_transient.py
 # Optional device/GUI checks, performed separately:

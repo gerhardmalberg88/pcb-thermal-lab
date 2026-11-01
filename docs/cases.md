@@ -1,6 +1,10 @@
 # Thermal case configuration
 
-`schema: 1` identifies the case interface. Paths are relative to the case file;
+Case files use **JSON only**, parsed with Python's standard library. Use
+`.json` filenames, double-quoted keys and strings, and no comments or trailing
+commas. Legacy YAML syntax is rejected. Paths are relative to the case file.
+
+`"schema": 1` identifies the case interface. Paths are relative to the case file;
 `project_root` encloses the board and mechanical inputs. `output` must be a
 dedicated directory. The pipeline owns its stage directories; manual work
 belongs in another directory. CLI execution options override case execution.
@@ -93,18 +97,32 @@ pad openings. Curved parts, sloped walls, overlapping parts and unsupported
 contact locations fail explicitly. A general curved heatsink/enclosure requires
 an extension to the geometry/contact mesher; it is not approximated silently.
 
-```yaml
-mechanicals:
-  - name: cooling_block
-    step: mechanics/block.step  # relative to project_root
-    material: aluminium        # define k, density and heat_capacity in materials
-    translate_mm: [0, 0, 0.135]
-    rotate_z_deg: 0
-    contact:
-      kind: layer
-      thickness_mm: 0.1
-      material: thermal_pad    # define editable material properties
+```json
+{
+  "mechanicals": [
+    {
+      "name": "cooling_block",
+      "step": "mechanics/block.step",
+      "material": "aluminium",
+      "translate_mm": [
+        0,
+        0,
+        0.135
+      ],
+      "rotate_z_deg": 0,
+      "contact": {
+        "kind": "layer",
+        "thickness_mm": 0.1,
+        "material": "thermal_pad"
+      }
+    }
+  ]
+}
 ```
+
+The STEP path is relative to `project_root`. Define `aluminium` and
+`thermal_pad` in `materials` with editable conductivity, density and heat
+capacity values before using this example.
 
 A `perfect` contact has no additional layer. A `layer` contact models finite
 thermal resistance and heat capacity through its actual thickness and material,
@@ -172,3 +190,20 @@ A pressure stop is a failed stage with retained logs, not a valid thermal result
 Only one pipeline runs per lab checkout. Schedule large native diagnostics and
 GUI reopening separately on small-memory machines. The documented BMS baseline
 used 7.19 GB peak solver RSS; refined domains may need more RAM.
+
+## JSON migration verification, 2026-11-01
+
+The layered-via example and board-specific case definitions were renamed to
+`.json` without changing their bytes or physical values. Generated sweep and
+study inputs also use JSON. Case parsing rejects YAML syntax and works without
+site packages; all 33 unit tests pass. The standalone CPU example completes
+extraction, meshing, conversion, solving, reporting and headless rendering.
+The CUDA comparison on the same mesh has a maximum nodal temperature difference
+of 1.46e-6 °C, below the 0.1 °C backend-agreement criterion. This does not extend
+BMS physical-model validation or reopen its closed simulation scope.
+
+The editable installation was refreshed offline using the existing environment.
+Installed container images were reused; a full source rebuild was not repeated.
+NVIDIA tooling accepts a temporary JSON device specification, and bootstrap
+scripts now request JSON. Existing host GPU configuration, historical result
+records and downloaded third-party source caches were left unchanged.

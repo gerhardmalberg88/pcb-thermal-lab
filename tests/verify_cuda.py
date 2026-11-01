@@ -30,10 +30,10 @@ if __name__=='__main__':
   from pcb_thermal.pipeline import run
   from pcb_thermal.runtime import Runtime
   src=ROOT/'results/examples/layered-via';out=ROOT/'results/validation/cuda-layered-via';checkdir=ROOT/'results/validation/cpu-cuda'
-  path,case,project,board,_=load(ROOT/'examples/layered-via/case.yaml')
+  path,case,project,board,_=load(ROOT/'examples/layered-via/case.json')
   case.update(project_root=str(project),board=str(board),output=str(out),name='CUDA layered-via comparison')
   inputs=ROOT/'.cache/verification-inputs';inputs.mkdir(parents=True,exist_ok=True)
-  path=inputs/'cuda-layered-via.yaml';write_json(path,case)
+  path=inputs/'cuda-layered-via.json';write_json(path,case)
   run(path,backend='cuda',mpi_ranks=1)
   checkdir.mkdir(exist_ok=True)
   for label,folder in [('cpu',src),('cuda',out)]:

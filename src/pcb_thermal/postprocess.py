@@ -63,7 +63,7 @@ def report(out,case):
                    resources=json.loads((out/'solve/resources.json').read_text()) if (out/'solve/resources.json').exists() else None)
     override=(out/'solve/case.override.sif').exists()
     summary['solver_input']={'authoritative_file':'../solve/case.sif','sha256':digest(out/'solve/case.sif'),
-                             'manually_supplied':override,'yaml_physics_verified_against_manual_sif':False if override else None}
+                             'manually_supplied':override,'json_physics_verified_against_manual_sif':False if override else None}
     write_json(dest/'summary.json',summary)
     text=[f'# {case.get("name","Thermal result")}','',
           f'Maximum predicted temperature: **{summary["maximum_temperature_c"]:.3f} °C**. Board maximum: **{summary["board_maximum_c"]:.3f} °C**.',
@@ -74,7 +74,7 @@ def report(out,case):
           '| Resistor | Mean input W | Maximum °C | Final mean °C |','|---|---:|---:|---:|']
     text += [f'| {r["reference"]} | {r["average_power_w"]:.6f} | {r["maximum_c"]:.3f} | {r["final_mean_c"]:.3f} |' for r in resistors]
     if override:
-        text+=['','The manually supplied [SIF](../solve/case.sif) is authoritative. The material, cooling and source tables below are declarations from the case YAML; their agreement with manual SIF edits has not been verified. Keep both inputs consistent for heat accounting.','']
+        text+=['','The manually supplied [SIF](../solve/case.sif) is authoritative. The material, cooling and source tables below are declarations from the case JSON; their agreement with manual SIF edits has not been verified. Keep both inputs consistent for heat accounting.','']
     text+=['','## Declared material and geometry inputs','',
            '| Material | kx, ky, kz W/mK | Density kg/m³ | Heat capacity J/kgK |',
            '|---|---|---:|---:|']+[f'| {n} | {m["k"]} | {m["density"]} | {m["heat_capacity"]} |' for n,m in case['materials'].items()]

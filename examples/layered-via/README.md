@@ -5,7 +5,7 @@ soldermask, solder and a hollow plated through via. It is an Apache-2.0 lab
 fixture, independent of BMS hardware. It exercises the same production stages:
 
 ```bash
-./pcb-thermal run examples/layered-via/case.yaml --backend cpu
+./pcb-thermal run examples/layered-via/case.json --backend cpu
 PYTHONPATH=src /usr/bin/python3 tests/verify_transient.py
 PYTHONPATH=src /usr/bin/python3 tests/verify_interfaces.py
 # Optional GUI reopening check; also needs xdotool on the host:

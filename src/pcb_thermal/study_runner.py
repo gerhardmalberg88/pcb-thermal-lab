@@ -180,7 +180,7 @@ def study(case_path, section='steady', schedules=None, time_budget_minutes=None,
             case.update(name=label, project_root=str(project), board=str(board), output=str(root/label))
             case['sources']['schedule'] = schedule; case['cooling']['h_w_m2k'] = h
             case['execution'].update(backend='cpu', cpu_solver='hypre', mpi_ranks=2, threads_per_rank=1)
-            path = inputs/(label+'.yaml'); write_json(path, case)
+            path = inputs/(label+'.json'); write_json(path, case)
             progress.save('running', label, report=False)
             with time_limit(allowance):
                 out = run(path, backend='cpu', mpi_ranks=2, threads_per_rank=1)
@@ -200,7 +200,7 @@ def study(case_path, section='steady', schedules=None, time_budget_minutes=None,
                 case['sources']['schedule'] = 'automatic'; case['cooling']['h_w_m2k'] = 10
                 case['geometry']['detail_margin_mm'] = 20
                 case['execution'].update(backend='cpu', cpu_solver='hypre', mpi_ranks=2, threads_per_rank=1)
-                path = inputs/(label+'.yaml'); write_json(path, case)
+                path = inputs/(label+'.json'); write_json(path, case)
                 try:
                     with time_limit(min(20*60, remaining-120)):
                         out = run(path, backend='cpu', mpi_ranks=2, threads_per_rank=1)

@@ -18,7 +18,7 @@ root=cpu.parent;inputs=root/'study-inputs';inputs.mkdir(exist_ok=True)
 for backend in ('cpu','cuda'):
     c=copy.deepcopy(base);out=cpu if backend=='cpu' else root/(cpu.name+'-cuda')
     c.update(project_root=str(project),board=str(board),output=str(out),name=out.name)
-    path=inputs/('backend-'+backend+'.yaml');write_json(path,c)
+    path=inputs/('backend-'+backend+'.json');write_json(path,c)
     run(path,backend=backend,mpi_ranks=2 if backend=='cpu' else 1)
 check=root/'backend-comparison';check.mkdir(exist_ok=True)
 @serial_workflow

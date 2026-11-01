@@ -20,7 +20,7 @@ def execute(label,changes):
   for part in parts[:-1]:obj=obj.setdefault(part,{})
   obj[parts[-1]]=value
  c.update(project_root=str(project),board=str(board),output=str(root/label),name=label)
- path=configdir/(label+'.yaml');write_json(path,c)
+ path=configdir/(label+'.json');write_json(path,c)
  write_json(manifest,{'status':'running','active':label,'completed':records,'started_unix':start})
  result=run(path,backend='cpu');summary=json.loads((result/'postprocess/summary.json').read_text())
  records.append({'case':label,'path':str(result),'summary':summary});write_json(manifest,{'status':'running','completed':records,'started_unix':start})

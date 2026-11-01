@@ -51,20 +51,12 @@ def write_json(path, data):
 
 def read_config(path):
     try:
-        text = Path(path).read_text()
-        try:
-            data = json.loads(text)
-        except json.JSONDecodeError:
-            try:
-                import yaml
-            except ImportError as error:
-                raise WorkflowError("YAML needs python3-yaml; JSON-format case files work without it.") from error
-            try:data = yaml.safe_load(text)
-            except yaml.YAMLError as error:
-                raise WorkflowError(f'Invalid YAML in {path}: {error}') from error
+        data = json.loads(Path(path).read_text(encoding='utf-8'))
         if not isinstance(data, dict):
             raise WorkflowError("Case configuration must be a mapping.")
         return data
+    except json.JSONDecodeError as error:
+        raise WorkflowError(f"Invalid JSON in {path}: {error}") from error
     except (OSError, ValueError) as error:
         raise WorkflowError(f"Cannot read {path}: {error}") from error
 
