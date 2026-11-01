@@ -23,7 +23,7 @@ def write_study_report(root, section, records, status, acceptance=None, detail=N
                      'report':os.path.relpath(Path(record['path'])/'postprocess/report.md',root)})
     if rows:
         with (root/f'study-{section}.csv').open('w') as stream:
-            writer=csv.DictWriter(stream,fieldnames=rows[0]);writer.writeheader();writer.writerows(rows)
+            writer=csv.DictWriter(stream,fieldnames=rows[0], lineterminator="\n");writer.writeheader();writer.writerows(rows)
     text=[f'# Balancing-resistor study: {section}','',f'Status: **{status}**. Completed runs: {len(rows)}.','',
           'These are resistor-only predictions. Ambient, material, solder and plating assumptions are listed in each run report. Mesh/domain convergence and hardware correlation remain separate from heat-balance verification.','',
           '| Case | h W/m²K | Resistor heat W | Maximum °C | Board maximum °C | Heat residual % |',

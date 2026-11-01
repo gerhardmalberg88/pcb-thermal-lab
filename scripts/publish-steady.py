@@ -13,7 +13,7 @@ from pcb_thermal.common import digest, write_json, WorkflowError
 from pcb_thermal.study_runner import verified_record, physical_signature
 
 
-def publish(root, destination):
+def publish(root, destination, normalization_manifest=None):
     root, destination = Path(root).resolve(), Path(destination).resolve()
     progress = json.loads((root/'study-steady.json').read_text())
     if progress['status'] in ('preparing', 'running'):
@@ -27,7 +27,7 @@ def publish(root, destination):
         if Path(name).name != name:
             raise WorkflowError('Case identifiers must be directory names')
         folder = root/name
-        record = verified_record(folder, reference)
+        record = verified_record(folder, reference, normalization_manifest)
         reference = reference or record
         s = record['summary']
         provenance = json.loads((folder/'provenance.json').read_text())
@@ -60,7 +60,7 @@ def publish(root, destination):
     if progress.get('optional_detail', {}).get('status') in ('pass', 'unconverged'):
         detail_name = progress['optional_detail']['case']
         detail_folder = root/detail_name
-        detail_record = verified_record(detail_folder)
+        detail_record = verified_record(detail_folder, normalization_manifest=normalization_manifest)
         detail_provenance = json.loads((detail_folder/'provenance.json').read_text())
         detail_case = json.loads((detail_folder/'case.resolved.json').read_text())
         normalized = copy.deepcopy(detail_case)
@@ -89,7 +89,7 @@ def publish(root, destination):
     destination.mkdir(parents=True, exist_ok=True)
     rows.sort(key=lambda r: (r['h_w_m2k'], ['automatic','odd','even'].index(r['schedule'])))
     with (destination/'summary.csv').open('w', newline='') as stream:
-        writer = csv.DictWriter(stream, fieldnames=rows[0]); writer.writeheader(); writer.writerows(rows)
+        writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n"); writer.writeheader(); writer.writerows(rows)
     for name in ('top.png', 'isometric.png'):
         shutil.copy2(baseline[0]/'postprocess'/name, destination/name)
     shutil.copy2(root/'steady-convection.png', destination/'convection.png')
@@ -106,6 +106,8 @@ def publish(root, destination):
                     physical_inputs={k:case[k] for k in ('analysis','sources','geometry','mesh','materials','cooling','assumptions')},
                     scope='Resistor-only CPU steady predictions; completion does not establish full domain convergence, transient behavior, CUDA agreement or hardware correlation',
                     published_sha256={p.name:digest(p) for p in destination.iterdir() if p.is_file() and p.name!='provenance.json'})
+    from pcb_thermal.source_normalization import verify_sources
+    snapshot.update(verify_sources(case['project_root'], source, normalization_manifest))
     write_json(destination/'provenance.json', snapshot)
     print(f'Published {len(rows)} accepted steady cases and three figures to {destination}')
 
@@ -114,5 +116,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('results', type=Path)
     parser.add_argument('destination', type=Path)
+    parser.add_argument("--source-normalization", type=Path)
     args = parser.parse_args()
-    publish(args.results, args.destination)
+    publish(args.results, args.destination, args.source_normalization)

@@ -64,7 +64,7 @@ poly=vtk.vtkPolyData();poly.SetPoints(points)
 probe=vtk.vtkCompositeDataProbeFilter();probe.SetInputData(poly);probe.SetSourceData(servermanager.Fetch(calc));probe.Update()
 data=probe.GetOutput().GetPointData();valid=data.GetArray('vtkValidPointMask');temperatures=data.GetArray('Temperature_C')
 with (out/'nearby-board-temperatures.csv').open('w') as stream:
-    writer=csv.writer(stream);writer.writerow(['reference','sample','x_mm','y_mm','z_mm','board_temperature_c','valid','field_time_s'])
+    writer=csv.writer(stream, lineterminator="\n");writer.writerow(['reference','sample','x_mm','y_mm','z_mm','board_temperature_c','valid','field_time_s'])
     for i,row in enumerate(samples):
         ok=bool(valid.GetValue(i));writer.writerow(row+[temperatures.GetValue(i) if ok else '',ok,scene.AnimationTime])
 for name,offset,up in [('top',[0,0,3],[0,-1,0]),('bottom',[0,0,-3],[0,-1,0]),('isometric',[2,-2,3],[0,0,1])]:

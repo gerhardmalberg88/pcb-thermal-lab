@@ -55,7 +55,7 @@ def physical_signature(case, sources):
     })
 
 
-def verified_record(folder, reference=None):
+def verified_record(folder, reference=None, normalization_manifest=None):
     """Validate a completed historical run, without relabeling it as a new solve."""
     folder = Path(folder)
     provenance = json.loads((folder/'provenance.json').read_text())
@@ -73,8 +73,11 @@ def verified_record(folder, reference=None):
         if not valid_cache(folder/stage, saved['key']):
             raise WorkflowError(f'Changed or missing {stage} artifacts: {folder}')
     project = Path(case['project_root'])
-    if any(digest(project/name) != value for name,value in provenance['source'].items()):
-        raise WorkflowError(f'Design inputs changed since {folder.name}')
+    from .source_normalization import verify_sources
+    try:
+        verify_sources(project, provenance['source'], normalization_manifest)
+    except ValueError as exc:
+        raise WorkflowError(f"Design inputs changed or normalization verification failed: {exc}") from exc
     verify_log(folder/'solve/solver.log')
     summary = json.loads((folder/'postprocess/summary.json').read_text())
     if not summary['heat_balance_pass'] or summary['maximum_heat_balance_relative_error'] >= .01:

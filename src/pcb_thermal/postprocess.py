@@ -40,7 +40,7 @@ def report(out,case):
     else:balance=float(abs(residual[-1])/max(power['total_w'],1e-20))
     enriched={**values,'heat_input_w':input_power,'heat_removed_w':removed,'stored_energy_j':energy,'heat_balance_residual_w':residual}
     with (dest/'history.csv').open('w') as stream:
-        writer=csv.writer(stream);writer.writerow(enriched)
+        writer=csv.writer(stream, lineterminator="\n");writer.writerow(enriched)
         writer.writerows(zip(*enriched.values()))
     resistors=[]
     for ref,p in power['resistors'].items():
@@ -48,7 +48,7 @@ def report(out,case):
                           'minimum_c':float(values[ref+'_min_k'].min()-273.15),
                           'maximum_c':float(values[ref+'_max_k'].max()-273.15),'final_mean_c':float(values[ref+'_mean_k'][-1]-273.15)})
     with (dest/'resistors.csv').open('w') as stream:
-        w=csv.DictWriter(stream,fieldnames=list(resistors[0]));w.writeheader();w.writerows(resistors)
+        w=csv.DictWriter(stream,fieldnames=list(resistors[0]), lineterminator="\n");w.writeheader();w.writerows(resistors)
     summary={'schema':1,'case':case.get('name'),'analysis':case['analysis'],'ambient_c':case['cooling']['ambient_c'],'h_w_m2k':h,
              'resistor_heat_w':power['total_w'],'excluded_switch_loss_w':power['switch_loss_w'],
              'maximum_temperature_c':float(values['temperature_max_k'].max()-273.15),

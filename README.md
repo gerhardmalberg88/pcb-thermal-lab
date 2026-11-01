@@ -1,5 +1,7 @@
 # PCB Thermal Lab
 
+Supported platform: **Linux**.
+
 File-based PCB heat-conduction simulation with KiCad, Gmsh, Elmer and ParaView.
 The reusable tooling lives here; board-specific cases live with the hardware.
 Both scripts and GUI applications inspect the same exported geometry, mesh,
@@ -180,3 +182,11 @@ Balancing control and switch resistance follow the
 [TI BQ79616-Q1 datasheet](https://www.ti.com/lit/ds/symlink/bq79616-q1.pdf);
 resistor dimensions follow the
 [Vishay RCL e3 datasheet](https://www.vishay.com/docs/20046/rcle3.pdf).
+
+Historical results whose sources underwent an LF-only migration can be checked
+with `scripts/publish-steady.py RESULTS DESTINATION --source-normalization MANIFEST`.
+The explicit version-1 manifest records the historical Git revision and original
+and normalized SHA256 hashes by repository-relative path. Verification requires
+those Git objects and proves exact CRLF-to-LF conversion; other source edits fail.
+Native solver provenance is retained, and published provenance adds the current
+source hashes and migration evidence. Fresh runs continue to require exact hashes.
