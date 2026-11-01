@@ -9,3 +9,6 @@ dist/
 
 # Machine-specific diagnostic build records; portable container locks stay versioned.
 env/locks/native-cpu/
+
+# Local working checklist; not published.
+/docs/TODO.md

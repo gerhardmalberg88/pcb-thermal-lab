@@ -8,9 +8,8 @@ solver input and result files.
 **The tooling and reduced CPU steady runs are implemented; full numerical
 validation remains open.** The limited BMS detail-region check failed local
 hotspot convergence, so its results remain provisional. The BMS simulation
-scope is closed at the steady study; further BMS simulations are not planned. Read
-[docs/TODO.md](docs/TODO.md) for the actual completed checks and outstanding
-work. A successful image build is not a validated thermal result.
+scope is closed at the steady study; further BMS simulations are not planned.
+A successful image build is not a validated thermal result.
 
 ## Quick start
 
